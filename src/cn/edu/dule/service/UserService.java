@@ -19,4 +19,6 @@ public interface UserService {
 	void updateAdmin(Admin admin);
 	void addAdmin(Admin admin);
 	QueryResult<Admin> getAllAdmins();
+	void focusBook(Student user, int bookInfoId);
+	void cancelFocus(Student user, int bookInfoId);
 }

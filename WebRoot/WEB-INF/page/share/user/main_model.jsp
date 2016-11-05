@@ -69,7 +69,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <li><a class="subheader">Books</a></li>
     <li><a href="<%=basePath%>user/allBooks?currentPage=1"><i class="material-icons">assignment</i>All Books</a></li>
     <li><a href="<%=basePath%>user/borrowedBooks?currentPage=1"><i class="material-icons">assignment</i>Borrowed Books</a></li>
-    <li><a href="#!"><i class="material-icons">loyalty</i>Focused Books</a></li>
+    <li><a href="<%=basePath%>user/focusedBooks?currentPage=1"><i class="material-icons">loyalty</i>Focused Books</a></li>
     <li><a class="subheader">Message</a></li>
     <li><a href="#!"><i class="material-icons">message</i>Message</a></li>
     <li><div class="divider"></div></li>

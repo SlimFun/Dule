@@ -12,9 +12,13 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.stereotype.Service;
 
 import cn.edu.dule.beans.Admin;
+import cn.edu.dule.beans.Book;
+import cn.edu.dule.beans.BookInfo;
 import cn.edu.dule.beans.QueryResult;
 import cn.edu.dule.beans.Student;
 import cn.edu.dule.beans.User;
+import cn.edu.dule.dao.BookDao;
+import cn.edu.dule.dao.BookInfoDao;
 import cn.edu.dule.dao.UserDao;
 import cn.edu.dule.service.UserService;
 
@@ -22,6 +26,7 @@ import cn.edu.dule.service.UserService;
 public class UserServiceImpl implements UserService{
 	
 	private UserDao userDao;
+	private BookInfoDao bookInfoDao;
 
 	@Override
 	public User getUserById(int id) {
@@ -40,6 +45,15 @@ public class UserServiceImpl implements UserService{
 	@Resource(name="userDaoImpl")
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
+	}
+	
+	public BookInfoDao getBookInfoDao() {
+		return bookInfoDao;
+	}
+
+	@Resource(name="bookInfoDaoImpl")
+	public void setBookInfoDao(BookInfoDao bookInfoDao) {
+		this.bookInfoDao = bookInfoDao;
 	}
 
 	@Override
@@ -106,6 +120,22 @@ public class UserServiceImpl implements UserService{
 	public QueryResult<Admin> getAllAdmins() {
 		// TODO Auto-generated method stub
 		return userDao.getAllAdmins();
+	}
+
+	@Override
+	public void focusBook(Student user, int bookInfoId) {
+		// TODO Auto-generated method stub
+		BookInfo bookInfo = bookInfoDao.find(BookInfo.class, bookInfoId);
+		user.getFocusOnBooks().add(bookInfo);
+		userDao.update(user);
+	}
+
+	@Override
+	public void cancelFocus(Student user, int bookInfoId) {
+		// TODO Auto-generated method stub
+		BookInfo bookInfo = bookInfoDao.find(BookInfo.class, bookInfoId);
+		user.getFocusOnBooks().remove(bookInfo);
+		userDao.update(user);
 	}
 	
 }

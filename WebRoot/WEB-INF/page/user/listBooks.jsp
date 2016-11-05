@@ -64,7 +64,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				   	    <s:else>
 					      		Book Status: OnBoard<br/>
 				   	    </s:else>
-				   	    	Location: <s:property value="book.position"/>
+				   	    	Location: <s:property value="book.position"/><br/>
+				   	    	<a class="waves-effect waves-light btn" href="<%=basePath%>/user/listBooksOfOneInfo?infoId=<s:property value="book.bookInfo.id"/>">ListAll</a>
 				   	    </p>
 				   	</div>
 			    </div>
@@ -133,7 +134,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				      		There is  <span id="totalNumberSpan<s:property value="#data.id"/>"></span> books<br/>
 				      		There is  <span id="onBoardNumberSpan<s:property value="#data.id"/>"></span> books on board<br/>
 				      </p>
-				      <a class="waves-effect waves-light btn" href="<%=basePath%>/user/listBooksOfOneInfo?infoId=<s:property value="#data.id"/>">查看所有</a>
+				      <a class="waves-effect waves-light btn" href="<%=basePath%>/user/listBooksOfOneInfo?infoId=<s:property value="#data.id"/>">ListAll</a>
 				   	</div>
 					<div id="loading<s:property value="#data.id"/>" class="preloader-wrapper big active">
 					    <div class="spinner-layer spinner-blue-only">
@@ -208,7 +209,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     				}
     			}
   			};
-  			
+  		
   			xmlhttp.open("POST",baseRoot+ "/user/admin/getBookNumbers?infoId="+infoId,true);
   			xmlhttp.send();
   			

@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -170,6 +171,8 @@ public class StudentAction extends ActionSupport implements SessionAware,Request
 		books = new PageView<Book>(1);
 		books.setResult(bookService.getBooksOfOneBookInfo(infoId));
 		bookInfo = bookService.getBookInfo(infoId);
+		Student user = (Student) session.get("user");
+		request.put("focused", user.getFocusOnBooks().contains(bookInfo));
 		return SUCCESS;
 	}
 	
@@ -312,6 +315,52 @@ public class StudentAction extends ActionSupport implements SessionAware,Request
 	
 	@Action(value="mainPage",results={@Result(name=SUCCESS,location="/WEB-INF/page/user/main.jsp")})
 	public String mainPage(){
+		return SUCCESS;
+	}
+	
+	@Action(value="focusBook",results={@Result(name=JSON, type=JSON, params={"root","msg"})})
+	public String focusBook(){
+		msg = new HashMap<String, Object>(); 
+		try{
+			Student user = (Student) session.get("user");
+			userService.focusBook(user, id);
+			msg.put("status", 0);
+			session.put("user", user);
+		}catch (Exception e) {
+			e.printStackTrace();
+			msg.put("status", 1);
+		}
+		return JSON;
+	}
+	
+	@Action(value="cancelFocusBook",results={@Result(name=JSON, type=JSON, params={"root","msg"})})
+	public String cancelFocusBook(){
+		msg = new HashMap<String, Object>(); 
+		try{
+			Student user = (Student) session.get("user");
+			userService.cancelFocus(user, id);
+			msg.put("status", 0);
+			session.put("user", user);
+		}catch (Exception e) {
+			e.printStackTrace();
+			msg.put("status", 1);
+		}
+		return JSON;
+	}
+	
+	@Action(value="focusedBooks",results={@Result(name=SUCCESS,location="/WEB-INF/page/user/listBooks.jsp")})
+	public String focusedBooks(){
+		Student stu = (Student) session.get("user");
+		pageView = new PageView<BookInfo>(currentPage);
+		QueryResult<BookInfo> bookInfos = new QueryResult<BookInfo>();
+		bookInfos.setResultList(new LinkedList<BookInfo>());
+		bookInfos.getResultList().addAll(stu.getFocusOnBooks());
+		bookInfos.setTotalRecord(stu.getFocusOnBooks().size());
+		pageView.setResult(bookInfos);
+		request.put("startPage", pageView.getStartPage());
+		request.put("endPage", pageView.getEndPage());
+		request.put("currentPage", pageView.getCurrentPage());
+		request.put("totalPage", pageView.getTotalPage());
 		return SUCCESS;
 	}
 	

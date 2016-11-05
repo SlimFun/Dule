@@ -39,7 +39,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	      		<div class="col s4" style="padding: 0px">
 			        	<img style="height: 190px;" class="activator" src="upload/<s:property value="bookInfo.img"></s:property>">
 	      		</div>
-	      		<div class="col s6">
+	      		<div class="col s5">
 			        	<p>
 			        	Book Name：<s:property value="bookInfo.name"></s:property><br>
 		        		Author：<s:property value="bookInfo.author"></s:property><br>
@@ -48,6 +48,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		        		Type：<s:property value="bookInfo.type.name"></s:property><br> 
 		        		</p>
 			    </div>
+			    
+			    <span id="focused" style="visibility: hidden;"><s:property value="#request.focused"/></span>
+			     <div class="col s3" id="focusBookDiv">
+			     	<div class="waves-effect waves-light btn" onclick="focusBook(<s:property value="bookInfo.id"/>)">Focus</div>
+		         </div>
+		         <div class="col s3" id="cancelFocusBookDiv">
+			     	<div class="waves-effect waves-light btn" onclick="cancelFocusBook(<s:property value="bookInfo.id"/>)">Cancel_Focus</div>
+		         </div>
 			</div>
 		</div>
 		<s:iterator value="books.datas" var="book">
@@ -57,7 +65,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			        	<p>
 			        		id : <s:property value="#book.id"/><br>
 			        		location : <s:property value="#book.position"/><br>
-			        		status : <s:property value="#book.status"/> 
+			        		status : <s:property value="#book.status"/> <br/>
+			        		
+			        		<s:if test="%{#book.borrowedStu!=null }">
+			        			<span id="borrowed"> borrower_id : <s:property value="#book.borrowedStu.id"/> </span>
+			        		</s:if>
 			        	</p>
 	        		</div>
 	        	</div>
@@ -70,9 +82,102 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
     <script type="text/javascript" src="js/materialize.min.js"></script>
     <script type="text/javascript">
+    
+    	var curWwwPath=window.document.location.href;  
+		var pathName=window.document.location.pathname;  
+		var pos=curWwwPath.indexOf(pathName);  
+		var localhostPaht=curWwwPath.substring(0,pos);  
+		var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);  
+		var baseRoot = localhostPaht+projectName;  
+    
+    	var focusDiv = null;
+    	var cancelFocusDiv = null;
+    	
     	$(document).ready(function(){
 		    $('.modal-trigger').leanModal();
+		    
+		    focusDiv = $('#focusBookDiv');
+  			cancelFocusDiv = $('#cancelFocusBookDiv');
+		    
+		    var focused = $('#focused').text();
+		    if(focused == "true"){
+		    	focusDiv.hide();
+		    	cancelFocusDiv.show();
+		    }else{
+		    	focusDiv.show();
+		    	cancelFocusDiv.hide();
+		    }
 		  });
+		  
+		  	
+  		function focusBook(infoId){
+			var xmlhttp;
+			if (window.XMLHttpRequest){
+  				xmlhttp=new XMLHttpRequest();
+  			}else{
+  				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  			}
+  			
+  			xmlhttp.onreadystatechange=function(){
+  				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+    				var result = xmlhttp.responseText;
+    				var obj = eval('(' + result + ')');    
+    				if(obj.status == 0){
+    					//alert("Success");
+						var content = "";
+				    	content = "<span>Focus Success.</span>";
+				    	var $toastContent = $(content);
+		  				Materialize.toast($toastContent, 1000);
+		  				
+		  				$('#focusBookDiv').hide();
+		  				$('#cancelFocusBookDiv').show();
+    				}else{
+						var content = "";
+				    	content = "<span>Focus Failed.</span>";
+				    	var $toastContent = $(content);
+		  				Materialize.toast($toastContent, 1000);
+		  				
+		  				$('#focusBookDiv').show();
+		  				$('#cancelFocusBookDiv').hide();
+    				}
+    			}
+  			};
+  			xmlhttp.open("POST",baseRoot+ "/user/focusBook?id="+infoId,true);
+  			xmlhttp.send();
+  			
+		};
+		
+		function cancelFocusBook(infoId){
+			var xmlhttp;
+			if (window.XMLHttpRequest){
+  				xmlhttp=new XMLHttpRequest();
+  			}else{
+  				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  			}
+  			
+  			xmlhttp.onreadystatechange=function(){
+  				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+    				var result = xmlhttp.responseText;
+    				var obj = eval('(' + result + ')');    
+    				if(obj.status == 0){
+		  				var $toastContent = $('<span>Cancel Success.</span>');
+  						Materialize.toast($toastContent, 1000);
+		  				
+		  				$('#cancelFocusBookDiv').hide();
+		  				$('#focusBookDiv').show();
+    				}else{
+		  				var $toastContent = $('<span>Cancel Failed.</span>');
+  						Materialize.toast($toastContent, 1000);
+		  				
+		  				$('#cancelFocusBookDiv').show();
+		  				$('#focusBookDiv').hide();
+    				}
+    			}
+  			};
+  			xmlhttp.open("POST",baseRoot+ "/user/cancelFocusBook?id="+infoId,true);
+  			xmlhttp.send();
+  			
+		};
     </script>
   </body>
 </html>
