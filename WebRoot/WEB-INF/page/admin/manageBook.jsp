@@ -135,6 +135,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   			xmlhttp.send();
   			
 		};
+		
 	</script>
   </body>
 </html>

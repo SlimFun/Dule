@@ -1,6 +1,9 @@
 package cn.edu.dule.service;
 
+import java.util.List;
+
 import cn.edu.dule.beans.Admin;
+import cn.edu.dule.beans.Message;
 import cn.edu.dule.beans.QueryResult;
 import cn.edu.dule.beans.Student;
 import cn.edu.dule.beans.User;
@@ -21,4 +24,6 @@ public interface UserService {
 	QueryResult<Admin> getAllAdmins();
 	void focusBook(Student user, int bookInfoId);
 	void cancelFocus(Student user, int bookInfoId);
+	List<Admin> getAllSuperAdmins();
+	void sendMessages(Message message);
 }

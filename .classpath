@@ -14,5 +14,7 @@
 	<classpathentry kind="lib" path="C:/Users/yh/Desktop/struts2-json-plugin-2.1.8.jar"/>
 	<classpathentry kind="lib" path="F:/wordpress/blog/JavaWeb/Struts/Struts2/libs/struts2-core-2.1.6.jar"/>
 	<classpathentry kind="lib" path="C:/Users/yh/Desktop/xwork-core-2.1.6.jar"/>
+	<classpathentry kind="lib" path="E:/java/开发类库/mail.jar"/>
+	<classpathentry kind="lib" path="E:/java/开发类库/commons-email-1.4/commons-email-1.4.jar"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>

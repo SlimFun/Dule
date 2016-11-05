@@ -26,7 +26,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   </head>
   
   <body>
-  	<jsp:include page="/WEB-INF/page/share/user/main_model.jsp"></jsp:include>
+  	<jsp:include page="/WEB-INF/page/share/admin/main_model.jsp"></jsp:include>
   	
   	<div class="row">
   		<div class="col s8 offset-s2">
@@ -34,7 +34,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   				<s:iterator value="#request.messages" var="msg">
   					<li>
 				      <div class="collapsible-header" style="vertical-align: middle;">
-				      	${msg.header }
+				      	${msg.header } 
 				      	&nbsp;&nbsp;&nbsp;<span style="color: #CECFD1;font-size: 5px;"><s:property value="#msg.timeAgo"/></span>
 					  </div>
 				      <div class="collapsible-body">

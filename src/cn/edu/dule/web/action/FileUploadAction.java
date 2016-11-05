@@ -21,13 +21,10 @@ import com.opensymphony.xwork2.ActionSupport;
 @Scope("prototype") 
 public class FileUploadAction extends ActionSupport {
 	
-	//注意，file并不是指前端jsp上传过来的文件本身，而是文件上传过来存放在临时文件夹下面的文件
     private File file;
     
-    //提交过来的file的名字
     private String fileFileName;
     
-    //提交过来的file的MIME类型
     private String fileContentType;
 	
 	@Action(value="fileUpload",results={@Result(name=SUCCESS,location="/success.jsp")})
@@ -40,7 +37,6 @@ public class FileUploadAction extends ActionSupport {
         
         System.out.println("fileFileName: " + fileFileName);
 
-        // 因为file是存放在临时文件夹的文件，我们可以将其文件名和文件路径打印出来，看和之前的fileFileName是否相同
         System.out.println("file: " + file.getName());
         System.out.println("file: " + file.getPath());
         

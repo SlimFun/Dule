@@ -14,11 +14,14 @@ import org.springframework.stereotype.Service;
 import cn.edu.dule.beans.Admin;
 import cn.edu.dule.beans.Book;
 import cn.edu.dule.beans.BookInfo;
+import cn.edu.dule.beans.Message;
 import cn.edu.dule.beans.QueryResult;
 import cn.edu.dule.beans.Student;
 import cn.edu.dule.beans.User;
+import cn.edu.dule.beans.WhereJPQL;
 import cn.edu.dule.dao.BookDao;
 import cn.edu.dule.dao.BookInfoDao;
+import cn.edu.dule.dao.MessageDao;
 import cn.edu.dule.dao.UserDao;
 import cn.edu.dule.service.UserService;
 
@@ -27,6 +30,16 @@ public class UserServiceImpl implements UserService{
 	
 	private UserDao userDao;
 	private BookInfoDao bookInfoDao;
+	private MessageDao messageDao;
+	
+	public MessageDao getMessageDao() {
+		return messageDao;
+	}
+
+	@Resource(name="messageDaoImpl")
+	public void setMessageDao(MessageDao messageDao) {
+		this.messageDao = messageDao;
+	}
 
 	@Override
 	public User getUserById(int id) {
@@ -136,6 +149,18 @@ public class UserServiceImpl implements UserService{
 		BookInfo bookInfo = bookInfoDao.find(BookInfo.class, bookInfoId);
 		user.getFocusOnBooks().remove(bookInfo);
 		userDao.update(user);
+	}
+
+	@Override
+	public List<Admin> getAllSuperAdmins() {
+		// TODO Auto-generated method stub
+		return userDao.getAllSuperAdmins();
+	}
+
+	@Override
+	public void sendMessages(Message message) {
+		// TODO Auto-generated method stub
+		messageDao.save(message);
 	}
 	
 }

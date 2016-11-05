@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +36,8 @@ import cn.edu.dule.beans.Admin;
 import cn.edu.dule.beans.Book;
 import cn.edu.dule.beans.BookInfo;
 import cn.edu.dule.beans.BookType;
+import cn.edu.dule.beans.Mail;
+import cn.edu.dule.beans.Message;
 import cn.edu.dule.beans.Priority;
 import cn.edu.dule.beans.QueryResult;
 import cn.edu.dule.beans.Student;
@@ -44,6 +48,7 @@ import cn.edu.dule.exception.DataNotExistException;
 import cn.edu.dule.service.AccountService;
 import cn.edu.dule.service.BookService;
 import cn.edu.dule.service.UserService;
+import cn.edu.dule.utils.EmailUtil;
 
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -94,6 +99,7 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 	private String searchInfo;
 	private String bookImg;
 	private Admin admin;
+	private int prioritiesI;
 	
 	private File file;
     
@@ -503,6 +509,10 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 			errorCode = (Integer) session.get("errorCode");
 			session.remove("errorCode");
 		}
+		allPriorities = new ArrayList<Priority>();
+		for(Priority pri : Priority.values()){
+			allPriorities.add(pri);
+		}
 		return SUCCESS;
 	}
 	
@@ -645,7 +655,80 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 			}
 		}
 		return SUCCESS;
-		
+	}
+	
+	@Action(value="applyForPrio", results={@Result(name=SUCCESS, type="redirect", location="/user/admin/editPersonInfo")})
+	public String applyForPrio(){
+		Admin admin = (Admin) session.get("admin");
+		Message msg = new Message();
+		msg.setHeader("An Admin apply for changing priorities.");
+		Mail mail = new Mail();
+		StringBuffer message = new StringBuffer("An Admin apply for changing the following priorities :<br/>");
+		int pri = 0;
+		for(Priority p : Priority.values()){
+			if(admin.containPriority(p) && !Arrays.asList(priorities).contains(p.toString()) && p != Priority.BORROW_BOOK && p!=Priority.RETURN_BOOK){
+				message.append("<font color='#ef5350'>" + p.toString() + "</font><br/>");
+			}else if(!admin.containPriority(p) && Arrays.asList(priorities).contains(p.toString())){
+				message.append("<font color='#008000'>" + p.toString() + "</font><br/>");
+			}
+		}
+		for(String priStr : priorities){
+			Priority p = Priority.valueOf(priStr);
+			pri = pri | (1 << p.ordinal());
+		}
+		pri = pri | 3;
+		mail.setSubject(msg.getHeader());
+		message.append("<a href='http://localhost:8080/Dule/user/admin/givePriorities?prioritiesI=" + pri + "&id=" + admin.getId() + "'>Ok,I'll change his/her priorities<br/></a>");
+		msg.setContent(message.toString());
+		mail.setMessage(message.toString());
+		msg.setDate(new Date());
+		List<Admin> superAdmins = userService.getAllSuperAdmins();
+		if(superAdmins != null){
+			for(Admin ad : superAdmins){
+				mail.setReceiver(ad.getEmail());
+				EmailUtil.send(mail);
+				msg.setUser(ad);
+				userService.sendMessages(msg);
+			}
+		}
+		return SUCCESS;
+	}
+	
+	@Action(value="givePriorities", results={@Result(name=SUCCESS, type="redirect", location="/user/admin/changePrioritiesSucc")})
+	public String givePriorities(){
+		Admin admin = userService.getAdminById(id);
+		admin.setPriority(prioritiesI);
+		userService.updateAdmin(admin);
+		return SUCCESS;
+	}
+	
+	@Action(value="changePrioritiesSucc", results={@Result(name=SUCCESS, location="/WEB-INF/page/admin/success.jsp")})
+	public String changePrioritiesSucc(){
+		return SUCCESS;
+	}
+	
+	@Action(value="messages", results={@Result(name=SUCCESS, location="/WEB-INF/page/admin/messages.jsp")})
+	public String messages(){
+		session.put("newMessageCnt", 0);
+		Admin admin = (Admin) session.get("admin");
+		List<Message> messages = new LinkedList<Message>();
+		messages.addAll(admin.getMessages());
+		Collections.sort(messages, new Comparator<Message>() {
+
+			@Override
+			public int compare(Message o1, Message o2) {
+				// TODO Auto-generated method stub
+				if(o1.getDate().getTime() > o2.getDate().getTime()){
+					return -1;
+				}else if(o1.getDate().getTime() < o2.getDate().getTime()){
+					return 1;
+				}else{
+					return 0;
+				}
+			}
+		});
+		request.put("messages", messages);
+		return SUCCESS;
 	}
 	
 	@Action(value="BorrowBook",results={@Result(name=SUCCESS,type="redirect",location="/user/admin/mainPage")})
@@ -927,6 +1010,14 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 	@Resource(name="accountServiceImpl")
 	public void setAccountService(AccountService accountService) {
 		this.accountService = accountService;
+	}
+
+	public int getPrioritiesI() {
+		return prioritiesI;
+	}
+
+	public void setPrioritiesI(int prioritiesI) {
+		this.prioritiesI = prioritiesI;
 	}
 	
 }

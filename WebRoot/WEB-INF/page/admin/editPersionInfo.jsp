@@ -39,7 +39,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					    	<s:property value="#pri"/>
 						</div>
 		  			</s:iterator>
-					<a class="btn-floating btn-small waves-effect waves-light red"><i class="material-icons">add</i></a>
+					<a class="btn-floating btn-small waves-effect waves-light red tooltipped modal-trigger" href="#applyForPrio" data-position="right" data-delay="50" data-tooltip="Apply for priorities"><i class="material-icons">add</i></a>
 		  		</div>
 		  		<div class="input-field col s8 offset-s2">
 		  			<input id="Id" type="text" class="validate" name="admin.id" disabled value="${admin.id }">
@@ -115,6 +115,18 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			    <div class="modal-footer">
 			      <a class=" modal-action modal-close waves-effect waves-green btn-flat">OK</a>
 			    </div>
+		</div>
+		
+		<div id="applyForPrio" class="modal">
+			    <form action="<%=basePath%>user/admin/applyForPrio" method="post">
+			  		Priorities:<br>
+		  			<s:iterator value="allPriorities" var="pri">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			  			<input type="checkbox" name="priorities" value="<s:property value="#pri"/>" id="<s:property value="#pri"/>" <s:if test="%{admin.containPriority(#pri)}">checked="checked"</s:if> <s:if test="%{#pri.ordinal()==0||#pri.ordinal()==1}">checked="checked" disabled="disabled"</s:if>/>
+	      				<label for="<s:property value="#pri"/>"><s:property value="#pri"/></label><br>
+      				</s:iterator>
+      				<input type="hidden" value="<s:property value="admin.id"/>" name="id" />
+      				<button class="btn waves-effect waves-light" type="submit" style="margin-top: 8px;">Apply</button>
+			  	</form>
 		</div>
 		
 		<span id="code" style="visibility: hidden;"><s:property value="errorCode"/></span>

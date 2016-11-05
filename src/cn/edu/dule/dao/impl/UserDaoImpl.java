@@ -109,6 +109,20 @@ public class UserDaoImpl extends SuperDaoImpl<User> implements UserDao {
 		return result;
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Admin> getAllSuperAdmins() {
+		List<Admin> data = (List<Admin>) hibernateTemplate.execute(new HibernateCallback() {
+			
+			public Object doInHibernate(Session session) throws HibernateException,
+					SQLException {
+				Query query = session.createQuery("select o from Admin o where priority > 64");
+				return query.list();
+			}
+		});
+		return data;
+	}
+
 //	@Override
 //	public void addStudent(Student student) {
 //		// TODO Auto-generated method stub

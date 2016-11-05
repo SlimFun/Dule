@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,6 +26,7 @@ import org.apache.struts2.interceptor.RequestAware;
 import org.apache.struts2.interceptor.SessionAware;
 import org.springframework.context.annotation.Scope;
 
+import cn.edu.dule.beans.Admin;
 import cn.edu.dule.beans.Book;
 import cn.edu.dule.beans.BookInfo;
 import cn.edu.dule.beans.Message;
@@ -154,6 +157,24 @@ public class StudentAction extends ActionSupport implements SessionAware,Request
 	@Action(value="messages", results={@Result(name=SUCCESS, location="/WEB-INF/page/user/messages.jsp")})
 	public String messages(){
 		session.put("newMessageCnt", 0);
+		Student user = (Student) session.get("user");
+		List<Message> messages = new LinkedList<Message>();
+		messages.addAll(user.getMessages());
+		Collections.sort(messages, new Comparator<Message>() {
+
+			@Override
+			public int compare(Message o1, Message o2) {
+				// TODO Auto-generated method stub
+				if(o1.getDate().getTime() > o2.getDate().getTime()){
+					return -1;
+				}else if(o1.getDate().getTime() < o2.getDate().getTime()){
+					return 1;
+				}else{
+					return 0;
+				}
+			}
+		});
+		request.put("messages", messages);
 		return SUCCESS;
 	}
 	

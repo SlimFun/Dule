@@ -67,7 +67,7 @@ Admin admin = (Admin)session.getAttribute("admin");
     </c:if>
     
     <li><a class="subheader">Message</a></li>
-    <li><a href="#!"><i class="material-icons">message</i>Message</a></li>
+    <li><a href="<%=basePath%>user/admin/messages"><i class="material-icons">message</i>Message</a></li>
   </ul>
   
   <c:if test="${admin==null }">

@@ -8,6 +8,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
+
+import cn.edu.dule.utils.DateUtil;
 
 import com.sun.istack.internal.Nullable;
 
@@ -20,6 +25,7 @@ public class Message {
 	private boolean hasRead = false;
 	private Date date;
 	private User user;
+	private String timeAgo;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -35,6 +41,8 @@ public class Message {
 	public void setHeader(String header) {
 		this.header = header;
 	}
+	
+	@Type(type="text") 
 	public String getContent() {
 		return content;
 	}
@@ -59,6 +67,15 @@ public class Message {
 	}
 	public void setDate(Date date) {
 		this.date = date;
+	}
+	
+	@Transient
+	public String getTimeAgo() {
+		return DateUtil.format(date);
+	}
+	
+	public void setTimeAgo(String timeAgo) {
+		this.timeAgo = timeAgo;
 	}
 	
 }
