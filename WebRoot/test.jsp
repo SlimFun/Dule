@@ -80,10 +80,19 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     </li>
   </ul>
 
-	<c:if test="${admin==null }">
-	<c:redirect url="/success.jsp"></c:redirect>
-	</c:if>
+ <div class="row">
+ 	<div class="col s8 offset-s2">
+ 		 <ul>
+		 	<li><a class="subheader">Message</a></li>
+		    <li><div href="#!">Message<span class="new badge red">4</span></div> </li>
+		    <li><div class="divider"></div></li>
+		    <li><a href="<%=basePath%>user/logout"><i class="material-icons">message</i>Logout</a></li>
+	 	</ul>
+ 	</div>
+ </div>
+	
 
+<div style="width: 35px;height:20px;font-weight: 300;font-size: 0.8rem;color: #fff;background-color:#F44336;border-radius:4px;text-align: center;">new</div>
 
     <script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
     <script type="text/javascript" src="js/materialize.min.js"></script>

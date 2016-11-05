@@ -44,7 +44,7 @@ public class Student extends User{
 
 	@Override
 	public String toString() {
-		return String.format("Student:id=%d, password=%s, email=%s, focusOnBooks=%s, borrowedBooks=%s", id, password, email, focusOnBooks, borrowedBooks );
+		return String.format("Student:id=%d, password=%s, email=%s, focusOnBooks=%s, borrowedBooks=%s, messages=%s", id, password, email, focusOnBooks, borrowedBooks, messages );
 	}
 
 	@OneToOne(fetch=FetchType.EAGER)

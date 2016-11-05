@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.BeforeClass;
@@ -16,6 +18,7 @@ import cn.edu.dule.beans.Account;
 import cn.edu.dule.beans.Admin;
 import cn.edu.dule.beans.Book;
 import cn.edu.dule.beans.BookInfo;
+import cn.edu.dule.beans.Message;
 import cn.edu.dule.beans.Priority;
 import cn.edu.dule.beans.QueryResult;
 import cn.edu.dule.beans.Student;
@@ -26,6 +29,7 @@ import cn.edu.dule.dao.AccountDao;
 import cn.edu.dule.dao.BookDao;
 import cn.edu.dule.dao.BookInfoDao;
 import cn.edu.dule.dao.BookTypeDao;
+import cn.edu.dule.dao.MessageDao;
 import cn.edu.dule.dao.UserBorBookDao;
 import cn.edu.dule.dao.UserDao;
 import cn.edu.dule.exception.DataNotExistException;
@@ -37,6 +41,7 @@ public class UserDaoImplTest {
 	private static BookInfoDao bookInfoDao;
 	private static UserBorBookDao ubbDao;
 	private static AccountDao accountDao;
+	private static MessageDao messageDao;
 	
 	private static ClassPathXmlApplicationContext ctx;
 	
@@ -48,6 +53,7 @@ public class UserDaoImplTest {
 		bookInfoDao = (BookInfoDao) ctx.getBean("bookInfoDaoImpl");
 		ubbDao = (UserBorBookDao) ctx.getBean("userBorBookDaoImpl");
 		accountDao = (AccountDao) ctx.getBean("accountDaoImpl");
+		messageDao = (MessageDao) ctx.getBean("messageDaoImpl");
 	}
 	
 //	@Test
@@ -138,7 +144,7 @@ public class UserDaoImplTest {
 	
 	@Test
 	public void testFind(){
-		Student stu = (Student) userDao.find(User.class, 2);
+		Student stu = (Student) userDao.find(User.class, 1);
 		System.out.println(stu);
 	}
 	
@@ -146,5 +152,25 @@ public class UserDaoImplTest {
 	public void testAccount(){
 		Account account = accountDao.find(Account.class, 1);
 		System.out.println(account.isFrozen());
+	}
+	
+	@Test
+	public void testMessageAdd(){
+		Message msg = new Message();
+		msg.setHeader("test");
+		msg.setContent("This is a test");
+		messageDao.save(msg);
+	}
+	
+	@Test
+	public void testMessage(){
+		Message msg = messageDao.find(Message.class, 1);
+		User user = userDao.find(User.class, 1);
+		List<Message> messages = new LinkedList<Message>();
+		messages.add(msg);
+		msg.setUser(user);
+		messageDao.update(msg);
+//		user.setMessages(messages);
+		userDao.update(user);
 	}
 }

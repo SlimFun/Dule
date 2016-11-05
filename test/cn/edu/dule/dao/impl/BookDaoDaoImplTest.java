@@ -3,6 +3,7 @@ package cn.edu.dule.dao.impl;
 import static org.junit.Assert.*;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import cn.edu.dule.beans.Book;
 import cn.edu.dule.beans.BookInfo;
 import cn.edu.dule.beans.Book.Status;
 import cn.edu.dule.beans.BookType;
+import cn.edu.dule.beans.User;
 import cn.edu.dule.dao.BookDao;
 import cn.edu.dule.dao.BookInfoDao;
 import cn.edu.dule.dao.BookTypeDao;
@@ -92,5 +94,11 @@ public class BookDaoDaoImplTest {
 		Book book = new Book();
 		book.setId(7);
 		bookDao.delete(book);
+	}
+	
+	@Test
+	public void getBookInfoFollowers(){
+		List<User> users = bookInfoDao.getFollowers(4);
+		System.out.println(users);
 	}
 }

@@ -1,7 +1,9 @@
 package cn.edu.dule.service.impl;
 
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.Resource;
 
@@ -11,6 +13,7 @@ import cn.edu.dule.beans.Book;
 import cn.edu.dule.beans.Book.Status;
 import cn.edu.dule.beans.BookInfo;
 import cn.edu.dule.beans.BookType;
+import cn.edu.dule.beans.Message;
 import cn.edu.dule.beans.QueryResult;
 import cn.edu.dule.beans.Student;
 import cn.edu.dule.beans.User;
@@ -19,7 +22,9 @@ import cn.edu.dule.beans.WhereJPQL;
 import cn.edu.dule.dao.BookDao;
 import cn.edu.dule.dao.BookInfoDao;
 import cn.edu.dule.dao.BookTypeDao;
+import cn.edu.dule.dao.MessageDao;
 import cn.edu.dule.dao.UserBorBookDao;
+import cn.edu.dule.dao.UserDao;
 import cn.edu.dule.exception.DataNotExistException;
 import cn.edu.dule.service.BookService;
 
@@ -30,6 +35,8 @@ public class BookServiceImpl implements BookService{
 	private BookInfoDao bookInfoDao;
 	private BookTypeDao bookTypeDao;
 	private UserBorBookDao ubbDao;
+	private UserDao userDao;
+	private MessageDao messageDao;
 
 	@Override
 	public void addBook(Book book) {
@@ -52,6 +59,24 @@ public class BookServiceImpl implements BookService{
 	@Resource(name="bookInfoDaoImpl")
 	public void setBookInfoDao(BookInfoDao bookInfoDao) {
 		this.bookInfoDao = bookInfoDao;
+	}
+	
+	public MessageDao getMessageDao() {
+		return messageDao;
+	}
+
+	@Resource(name="messageDaoImpl")
+	public void setMessageDao(MessageDao messageDao) {
+		this.messageDao = messageDao;
+	}
+
+	public UserDao getUserDao() {
+		return userDao;
+	}
+
+	@Resource(name="userDaoImpl")
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
 	}
 
 	@Override
@@ -174,6 +199,7 @@ public class BookServiceImpl implements BookService{
 	public void borrowBook(Student user, Book book) {
 		// TODO Auto-generated method stub
 		book = bookDao.find(Book.class, book.getId());
+		sendMessages(user,book);
 		if(book != null){
 			book.setBorrowedStu(user);
 			book.setStatus(Status.BORROWED);
@@ -182,6 +208,35 @@ public class BookServiceImpl implements BookService{
 		}else{
 			throw new DataNotExistException();
 		}
+	}
+
+	private void sendMessages(Student user, Book book) {
+		// TODO Auto-generated method stub
+		List<User> users = bookInfoDao.getFollowers(book.getBookInfo().getId());
+		Message msg = new Message();
+		Date date = new Date();
+		DateFormat format=DateFormat.getDateInstance(DateFormat.FULL,Locale.US);
+		String str=format.format(date);
+		msg.setHeader("A book you focused has bean borrowed.");
+		msg.setContent("The following book has bean borrowed:<br/>" +
+						"book name:" + book.getBookInfo().getName() + "<br/>" +
+						"book id:" + book.getBookInfo().getId() + "<br/>" +
+						"Borrower name:" + user.getUsername() + "<br/>" +
+						"Borrower id" + user.getId() + "<br/>" +
+						"Borrowed Date:" + str);
+		msg.setDate(date);
+		for(User u : users){
+			u.getMessages().add(msg);
+			msg.setUser(u);
+			messageDao.save(msg);
+			//userDao.update(u);
+		}
+		sendEmails(users, msg);
+	}
+
+	private void sendEmails(List<User> users, Message msg) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public UserBorBookDao getUbbDao() {

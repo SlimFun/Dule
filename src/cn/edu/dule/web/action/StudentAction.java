@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Scope;
 
 import cn.edu.dule.beans.Book;
 import cn.edu.dule.beans.BookInfo;
+import cn.edu.dule.beans.Message;
 import cn.edu.dule.beans.QueryResult;
 import cn.edu.dule.beans.Student;
 import cn.edu.dule.beans.User;
@@ -112,6 +113,15 @@ public class StudentAction extends ActionSupport implements SessionAware,Request
 			return ERROR;
 		}else if(stu.getPassword().equals(password)){
 			session.put("user", stu);
+			int newMessageCnt = 0;
+			if(stu.getMessages() != null){
+				for(Message msg : stu.getMessages()){
+					if(!msg.isHasRead()){
+						newMessageCnt++;
+					}
+				}
+			}
+			session.put("newMessageCnt", newMessageCnt);
 			return SUCCESS;
 		}else{
 			errorCode = PASSWORD_ERROR;
@@ -138,6 +148,12 @@ public class StudentAction extends ActionSupport implements SessionAware,Request
 			errorCode = (Integer) session.get("errorCode");
 			session.remove("errorCode");
 		}
+		return SUCCESS;
+	}
+	
+	@Action(value="messages", results={@Result(name=SUCCESS, location="/WEB-INF/page/user/messages.jsp")})
+	public String messages(){
+		session.put("newMessageCnt", 0);
 		return SUCCESS;
 	}
 	

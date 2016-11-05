@@ -1,12 +1,17 @@
 package cn.edu.dule.beans;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
 
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
@@ -17,6 +22,7 @@ public class User {
 	protected String email;
 	protected String phone;
 	protected String profile;
+	protected Set<Message> messages;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -56,6 +62,13 @@ public class User {
 	}
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+	@OneToMany(fetch=FetchType.EAGER,mappedBy="user")
+	public Set<Message> getMessages() {
+		return messages;
+	}
+	public void setMessages(Set<Message> messages) {
+		this.messages = messages;
 	}
 	
 }
