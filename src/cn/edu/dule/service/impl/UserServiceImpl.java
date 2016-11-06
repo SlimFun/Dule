@@ -162,5 +162,17 @@ public class UserServiceImpl implements UserService{
 		// TODO Auto-generated method stub
 		messageDao.save(message);
 	}
+
+	@Override
+	public void updateMessage(Message message) {
+		// TODO Auto-generated method stub
+		messageDao.update(message);
+	}
+
+	@Override
+	public Message getMessage(int id) {
+		// TODO Auto-generated method stub
+		return messageDao.find(Message.class, id);
+	}
 	
 }

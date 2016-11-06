@@ -146,6 +146,15 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 			return ERROR;
 		}else if(admin.getPassword().equals(password)){
 			session.put("admin", admin);
+			int newMessageCnt = 0;
+			if(admin.getMessages() != null){
+				for(Message msg : admin.getMessages()){
+					if(!msg.isHasRead()){
+						newMessageCnt++;
+					}
+				}
+			}
+			session.put("msgToRead", newMessageCnt);
 			session.put("priorities", admin.generatePriorities());
 			return SUCCESS;
 		}else{
@@ -605,6 +614,52 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 		}
 	}
 	
+	@Action(value="hasReadMessage", results={@Result(name=SUCCESS,type=JSON, params={"root","msg"})})
+	public String hasReadMessage(){
+		msg = new HashMap<String, Object>();
+		try{
+			Message message = userService.getMessage(id);
+			message.setHasRead(true);
+			userService.updateMessage(message);
+			Admin admin = (Admin) session.get("admin");
+			admin = userService.getAdminById(admin.getId());
+			session.put("admin", admin);
+			int msgToRead = (Integer) session.get("msgToRead");
+			session.put("msgToRead", msgToRead==0?0:--msgToRead);
+			msg.put("status", 0);
+			msg.put("msgToRead", msgToRead);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			msg.put("status", 1);
+		}
+		return SUCCESS;
+	}
+	
+	@Action(value="resetUser",  results={@Result(name=JSON,type=JSON, params={"root","msg"})})
+	public String resetUser(){
+		msg = new HashMap<String, Object>();
+		try{
+			Admin admin = (Admin) session.get("admin");
+			admin = userService.getAdminById(admin.getId());
+			session.put("admin", admin);
+			int msgToRead = 0;
+			for(Message msg : admin.getMessages()){
+				if(!msg.isHasRead()){
+					msgToRead++;
+				}
+			}
+			session.put("msgToRead", msgToRead);
+			msg.put("status", 0);
+			msg.put("msgToRead", msgToRead);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			msg.put("status", 1);
+		}
+		return JSON;
+	}
+	
 	private void uploadFile() throws Exception {
 		String root = ServletActionContext.getServletContext().getRealPath("/upload");
         
@@ -754,6 +809,18 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 		Admin admin = userService.getAdminById(id);
 		admin.setPriority(prioritiesI);
 		userService.updateAdmin(admin);
+		Message message = new Message();
+		message.setHeader("You priorities have bean changed.");
+		StringBuffer sb = 
+				new StringBuffer("Your priorities have bean admitted to be changed.<br/>" + 
+								"Now, you have the following priorities:<br/>");
+		for(Priority p : Priority.values()){
+			if(admin.containPriority(p)){
+				sb.append(p.toString() + "<br/>");
+			}
+		}
+		message.setContent(sb.toString());
+		sendEmail(message, admin);
 		return SUCCESS;
 	}
 	

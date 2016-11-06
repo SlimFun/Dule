@@ -67,7 +67,9 @@ Admin admin = (Admin)session.getAttribute("admin");
     </c:if>
     
     <li><a class="subheader">Message</a></li>
-    <li><a href="<%=basePath%>user/admin/messages"><i class="material-icons">message</i>Message</a></li>
+    <li><a href="<%=basePath%>user/admin/messages"><i class="material-icons">message</i>Message
+    <span id="newsBadge" style="font-weight: 300;font-size: 0.8rem;color: #fff;background-color:#F44336;border-radius:4px;text-align: center;padding-left: 6px;padding-right: 6px;padding-top: 4px;padding-bottom: 4px;margin-left: 17px;<s:if test='%{#session.msgToRead==0}'>visibility: hidden;</s:if>"><s:property value="#session.msgToRead"/> news</span>
+    </a></li>
   </ul>
   
   <c:if test="${admin==null }">
@@ -79,4 +81,40 @@ Admin admin = (Admin)session.getAttribute("admin");
     <script type="text/javascript" src="js/materialize.min.js"></script>
     <script type="text/javascript">
     	$("#button-collapse").sideNav();
+    	
+    	var curWwwPath=window.document.location.href;  
+		var pathName=window.document.location.pathname;  
+		var pos=curWwwPath.indexOf(pathName);  
+		var localhostPaht=curWwwPath.substring(0,pos);  
+		var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);  
+		var baseRoot = localhostPaht+projectName;  
+		
+    	$(document).ready(function(){
+    		var xmlhttp;
+			if (window.XMLHttpRequest){
+  				xmlhttp=new XMLHttpRequest();
+  			}else{
+  				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  			}
+  			
+  			xmlhttp.onreadystatechange=function(){
+  				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+    				var result = xmlhttp.responseText;
+    				var obj = eval('(' + result + ')');    
+    				if(obj.status == 0){
+    					if(obj.msgToRead != 0){
+    						$('#newsBadge').show();
+    						$('#newsBadge').html(obj.msgToRead+" news");
+    					}else{
+    						$('#newsBadge').hide();
+    					}
+    				}else{
+
+    				}
+    			}
+  			};
+  		
+  			xmlhttp.open("POST",baseRoot+ "/user/admin/resetUser",true);
+  			xmlhttp.send();
+    	});
     </script>

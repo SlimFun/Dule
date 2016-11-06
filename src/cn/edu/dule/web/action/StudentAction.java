@@ -124,7 +124,7 @@ public class StudentAction extends ActionSupport implements SessionAware,Request
 					}
 				}
 			}
-			session.put("newMessageCnt", newMessageCnt);
+			session.put("msgToRead", newMessageCnt);
 			return SUCCESS;
 		}else{
 			errorCode = PASSWORD_ERROR;
@@ -399,6 +399,52 @@ public class StudentAction extends ActionSupport implements SessionAware,Request
 		request.put("currentPage", pageView.getCurrentPage());
 		request.put("totalPage", pageView.getTotalPage());
 		return SUCCESS;
+	}
+	
+	@Action(value="hasReadMessage", results={@Result(name=SUCCESS,type=JSON, params={"root","msg"})})
+	public String hasReadMessage(){
+		msg = new HashMap<String, Object>();
+		try{
+			Message message = userService.getMessage(id);
+			message.setHasRead(true);
+			userService.updateMessage(message);
+			Student user = (Student) session.get("user");
+			user = userService.getStudentById(user.getId());
+			session.put("user", user);
+			int msgToRead = (Integer) session.get("msgToRead");
+			session.put("msgToRead", msgToRead==0?0:--msgToRead);
+			msg.put("status", 0);
+			msg.put("msgToRead", msgToRead);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			msg.put("status", 1);
+		}
+		return SUCCESS;
+	}
+	
+	@Action(value="resetUser",  results={@Result(name=JSON,type=JSON, params={"root","msg"})})
+	public String resetUser(){
+		msg = new HashMap<String, Object>();
+		try{
+			Student user = (Student) session.get("user");
+			user = userService.getStudentById(user.getId());
+			session.put("user", user);
+			int msgToRead = 0;
+			for(Message msg : user.getMessages()){
+				if(!msg.isHasRead()){
+					msgToRead++;
+				}
+			}
+			session.put("msgToRead", msgToRead);
+			msg.put("status", 0);
+			msg.put("msgToRead", msgToRead);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			msg.put("status", 1);
+		}
+		return JSON;
 	}
 	
 	private void uploadFile() throws Exception {

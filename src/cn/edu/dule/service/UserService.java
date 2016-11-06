@@ -26,4 +26,6 @@ public interface UserService {
 	void cancelFocus(Student user, int bookInfoId);
 	List<Admin> getAllSuperAdmins();
 	void sendMessages(Message message);
+	void updateMessage(Message message);
+	Message getMessage(int id);
 }
