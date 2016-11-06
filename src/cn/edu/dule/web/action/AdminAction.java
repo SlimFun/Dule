@@ -84,6 +84,7 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 	
 	private static final int DONT_HAVE_ACCOUNT_YET = 11;
 	private static final int ACCOUNT_HAS_BEAN_FROZEN = 12;
+	private static final int BOOK_HAS_BEAN_BORROWED = 13;
 	
 	private int id;
 	private String password;
@@ -426,6 +427,10 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 		books = new PageView<Book>(1);
 		books.setResult(bookService.getBooksOfOneBookInfo(infoId));
 		bookInfo = bookService.getBookInfo(infoId);
+		if(session.get("errorCode") != null){
+			errorCode = (Integer) session.get("errorCode");
+			session.remove("errorCode");
+		}
 		return SUCCESS;
 	}
 	
@@ -559,8 +564,16 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 		return SUCCESS;
 	}
 	
-	@Action(value="deleteBookInfo",results={@Result(name=SUCCESS,type="redirect",location="/user/admin/manageBook?currentPage=1")})
+	@Action(value="deleteBookInfo",results={@Result(name=SUCCESS,type="redirect",location="/user/admin/manageBook?currentPage=1"),
+			@Result(name=ERROR, type="redirect", location="/user/admin/listBooksOfOneInfo?infoId=${id}")})
 	public String deleteBookInfo(){
+		QueryResult<Book> books = bookService.getBooksOfOneBookInfo(id);
+		for(Book book : books.getResultList()){
+			if(book.getStatus() == Book.Status.BORROWED){
+				session.put("errorCode", BOOK_HAS_BEAN_BORROWED);
+				return ERROR;
+			}
+		}
 		bookService.deleteBooksOfOneInfo(id);
 		bookService.deleteBookInfo(id);
 		return SUCCESS;
@@ -729,11 +742,15 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 	@Action(value="deleteBook",
 			results={
 				@Result(name=SUCCESS,type="redirect",location="/user/admin/listBooksOfOneInfo?infoId=${infoId}"),
-				@Result(name=ERROR,location="/error.jsp")},
+				@Result(name=ERROR,type="redirect",location="/user/admin/listBooksOfOneInfo?infoId=${infoId}")},
 			exceptionMappings={@ExceptionMapping(exception="java.lang.Exception",result=ERROR)})
 	public String delete(){
-		Book book = new Book();
-		book.setId(id);
+		Book book = bookService.getBook(id);
+		if(book.getStatus() == Book.Status.BORROWED){
+			session.put("errorCode", BOOK_HAS_BEAN_BORROWED);
+			return ERROR;
+		}
+		infoId = book.getBookInfo().getId();
 		bookService.delete(book);
 		return SUCCESS;
 	}
@@ -773,7 +790,8 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 		Message msg = new Message();
 		msg.setHeader("An Admin apply for changing priorities.");
 		Mail mail = new Mail();
-		StringBuffer message = new StringBuffer("An Admin apply for changing the following priorities :<br/>");
+		StringBuffer message = new StringBuffer("An Admin(id:" + admin.getId() +
+				") apply for changing the following priorities :<br/>");
 		int pri = 0;
 		for(Priority p : Priority.values()){
 			if(admin.containPriority(p) && !Arrays.asList(priorities).contains(p.toString()) && p != Priority.BORROW_BOOK && p!=Priority.RETURN_BOOK){
@@ -801,6 +819,31 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 				userService.sendMessages(msg);
 			}
 		}
+		return SUCCESS;
+	}
+	
+	@Action(value="logout", results={@Result(name=SUCCESS, type="redirect", location="/user/admin/login")})
+	public String logout(){
+		session.remove("admin");
+		session.remove("msgToRead");
+		return SUCCESS;
+	}
+	
+	@Action(value="recharge",results={@Result(name=SUCCESS,type="redirect",location="/user/admin/searchUser?searchInfo=${userId}")})
+	public String recharge(){
+		Student user = userService.getStudentById(userId);
+		float totalBalance = user.getAccount().getMoney() + balance;
+		accountService.recharge(user.getAccount().getId(), totalBalance);
+		
+		Message message = new Message();
+		message.setHeader("Your account has bean recharge гд" +balance+ ".");
+		message.setContent("Your account has bean recharge гд" +balance+ ".<br/>"+
+				"Now,the total balance is: гд" + totalBalance + ".<br/>");
+		message.setDate(new Date());
+		message.setUser(user);
+		userService.sendMessages(message);
+		sendEmail(message, user);
+		
 		return SUCCESS;
 	}
 	

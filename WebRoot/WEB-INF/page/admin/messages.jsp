@@ -35,12 +35,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   					<li onclick="removeNew(<s:property value="#msg.id"/>)">
 				      <div class="collapsible-header" style="vertical-align: middle;">
 				      	<div class="row">
-				      		<div class="col s10">
+				      		<div class="col s11">
 						      	${msg.header } 
 						      	&nbsp;&nbsp;&nbsp;<span style="color: #CECFD1;font-size: 5px;"><s:property value="#msg.timeAgo"/></span>
 				      		</div>
 					      	<s:if test="%{#msg.hasRead==false}">
-							  		<span id="new<s:property value="#msg.id"/>" style="width: 35px;height:20px;font-weight: 300;font-size: 0.8rem;color: #fff;background-color:#F44336;border-radius:4px;text-align: center;margin-left: 100px;padding-left: 6px;padding-right: 6px;padding-top: 4px;padding-bottom: 4px;">new</span>
+							  		<span id="new<s:property value="#msg.id"/>" style="width: 35px;height:20px;font-weight: 300;font-size: 0.8rem;color: #fff;background-color:#F44336;border-radius:4px;text-align: center;padding-left: 6px;padding-right: 6px;padding-top: 4px;padding-bottom: 4px;">new</span>
 						  	</s:if>
 						</div>
 					  </div>

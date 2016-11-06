@@ -70,6 +70,8 @@ Admin admin = (Admin)session.getAttribute("admin");
     <li><a href="<%=basePath%>user/admin/messages"><i class="material-icons">message</i>Message
     <span id="newsBadge" style="font-weight: 300;font-size: 0.8rem;color: #fff;background-color:#F44336;border-radius:4px;text-align: center;padding-left: 6px;padding-right: 6px;padding-top: 4px;padding-bottom: 4px;margin-left: 17px;<s:if test='%{#session.msgToRead==0}'>visibility: hidden;</s:if>"><s:property value="#session.msgToRead"/> news</span>
     </a></li>
+    <li><div class="divider"></div></li>
+    <li><a href="<%=basePath%>user/admin/logout"><i class="material-icons">message</i>Logout</a></li>
   </ul>
   
   <c:if test="${admin==null }">

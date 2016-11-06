@@ -60,7 +60,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					      				This user don`t have account yet.  <a href="#addAccount" class="modal-trigger btn-floating btn-small waves-effect waves-light red tooltipped" data-position="right" data-delay="50" data-tooltip="Add a account"><i class="material-icons">add</i></a>
 					      			</s:if>
 					      			<s:else>
-					      				balance: <s:property value="userSearchResult.account.money"/> <br>
+					      				balance: <s:property value="userSearchResult.account.money"/> <a class="btn-floating btn-small waves-effect waves-light red tooltipped modal-trigger" href="#recharge" data-position="right" data-delay="50" data-tooltip="recharge"><i class="material-icons">add</i></a> <br><br>
 					      				status: 
 					      				<s:if test="%{userSearchResult.account.frozen==false}">
 					      					Active &nbsp;&nbsp;&nbsp;
@@ -83,8 +83,23 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				<form action="<%=basePath%>user/admin/addAccount" method="post">
 				    <div class="modal-content">
 						<div class="input-field col s8 offset-s2">
-				  			<input id="balance" type="number" class="validate" name="balance" required>
+				  			<input id="balance" type="number" class="validate" min="0" name="balance" required>
 					        <label for="balance">Input the balance of account: </label>
+				  		</div>
+				    </div>
+				    <input type="hidden" name="userId" value="<s:property value="userSearchResult.id"/>" />
+				    <div class="modal-footer">
+				    	<input type="submit" onclick="submitForm()" class=" modal-action waves-effect waves-green btn-flat" value="Add">
+				    </div>
+				</form>
+			</div>
+			
+			<div id="recharge" class="modal">
+				<form action="<%=basePath%>user/admin/recharge" method="post">
+				    <div class="modal-content">
+						<div class="input-field col s8 offset-s2">
+				  			<input id="balance" type="number" class="validate" name="balance" min="0" required>
+					        <label for="balance">recharge: </label>
 				  		</div>
 				    </div>
 				    <input type="hidden" name="userId" value="<s:property value="userSearchResult.id"/>" />

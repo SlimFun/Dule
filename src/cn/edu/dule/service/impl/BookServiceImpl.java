@@ -215,8 +215,6 @@ public class BookServiceImpl implements BookService{
 			msg.setContent("The following book has bean borrowed:<br/>" +
 							"book name:" + book.getBookInfo().getName() + "<br/>" +
 							"book id:" + book.getBookInfo().getId() + "<br/>" +
-							"Borrower name:" + user.getUsername() + "<br/>" +
-							"Borrower id:" + user.getId() + "<br/>" +
 							"Borrowed Date:" + str);
 			msg.setDate(date);
 			sendMessages(book, msg);

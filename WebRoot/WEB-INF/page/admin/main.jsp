@@ -36,10 +36,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		  
 			  <div style="width: 500px; margin:0px auto; ">
 				  <h1 style="color: #009FC6">Welcome Dule!</h1><br>
-				  <form action="<%=basePath%>user/admin/searchBook">
+				  <form action="<%=basePath%>user/admin/searchBook" method="post">
 				  		<div class="row">
 					  		<div class="input-field col s12" style="text-align: left;">
-							          	<input id="search_book" type="text" class="validate" name="searchInfo">
+							          	<input id="search_book" type="text" class="validate" name="searchInfo" required>
 							          	<label for="search_book">Search Book</label>
 							</div>
 						</div>

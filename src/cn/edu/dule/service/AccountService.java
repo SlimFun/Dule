@@ -6,4 +6,5 @@ public interface AccountService {
 	void addAccount(int userId, Account account);
 	void frozenAccount(int id);
 	void activeAccount(int id);
+	void recharge(int id, float balance);
 }

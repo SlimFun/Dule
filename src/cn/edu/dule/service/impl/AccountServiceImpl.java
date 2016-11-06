@@ -59,5 +59,13 @@ public class AccountServiceImpl implements AccountService{
 		accountDao.update(account);
 	}
 
+	@Override
+	public void recharge(int id, float balance) {
+		// TODO Auto-generated method stub
+		Account account = accountDao.find(Account.class, id);
+		account.setMoney(balance);
+		accountDao.update(account);
+	}
+
 	
 }

@@ -159,13 +159,27 @@ Admin admin = (Admin)session.getAttribute("admin");
 			    </div>
 			</div>
 			
+			<div id="bookHasBeanBorrowed" class="modal">
+			    <div class="modal-content">
+			      <p style="color: #ef5350">Book has bean borrowed, you can't delete it now.</p>
+			    </div>
+			    <div class="modal-footer">
+			      <a class=" modal-action modal-close waves-effect waves-green btn-flat">OK</a>
+			    </div>
+		</div>
 			
+	<span id="code" style="visibility: hidden;"><s:property value="errorCode"/></span>
     
     <script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
     <script type="text/javascript" src="js/materialize.min.js"></script>
     <script type="text/javascript">
     	$(document).ready(function(){
 		    $('.modal-trigger').leanModal();
+		    
+		    var code = $('#code').text();
+		    if(code == 13){
+		    	$('#bookHasBeanBorrowed').openModal();
+		    }
 		  });
     </script>
   </body>
