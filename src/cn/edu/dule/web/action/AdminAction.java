@@ -82,6 +82,9 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 	
 	private static final int UPDATE_ADMIN_SUCC = 10;
 	
+	private static final int DONT_HAVE_ACCOUNT_YET = 11;
+	private static final int ACCOUNT_HAS_BEAN_FROZEN = 12;
+	
 	private int id;
 	private String password;
 	private String error;
@@ -265,7 +268,59 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 		account.setFrozen(false);
 		account.setMoney(balance);
 		accountService.addAccount(userId, account);
+		
+		Message message = new Message();
+		message.setHeader("Your account has bean initialized.");
+		message.setContent("Your account has bean initialized.<br/>" +
+				"Welcome to Dule!<br/>" +
+				"Your initial balance is гд" + balance + "<br/>" +
+				"Have a good time!");
+		message.setDate(new Date());
+		Student user = userService.getStudentById(userId);
+		message.setUser(user);
+		userService.sendMessages(message);
+		sendEmail(message, user);
+		
 		return SUCCESS;
+	}
+	
+	@Action(value="frozenAccount",results={@Result(name=SUCCESS, type="redirect",location="/user/admin/searchUser?searchInfo=${userId}")})
+	public String frozenAccount(){
+		accountService.frozenAccount(id);
+		Message message = new Message();
+		message.setHeader("Your account has bean frozen.");
+		message.setContent("Your account has bean frozen.<br/>" +
+				"If you want to reactive your account please apply to admin.");
+		message.setDate(new Date());
+		Student user = userService.getStudentById(userId);
+		message.setUser(user);
+		userService.sendMessages(message);
+		sendEmail(message, user);
+		return SUCCESS;
+	}
+	
+	@Action(value="activeAccount",results={@Result(name=SUCCESS, type="redirect",location="/user/admin/searchUser?searchInfo=${userId}")})
+	public String activeAccount(){
+		accountService.activeAccount(id);
+		Message message = new Message();
+		message.setHeader("Your account has bean actived.");
+		message.setContent("Your account has bean actived.<br/>" +
+				"Thanks for using !<br/>" +
+				"Have a good time !");
+		message.setDate(new Date());
+		Student user = userService.getStudentById(userId);
+		message.setUser(user);
+		userService.sendMessages(message);
+		sendEmail(message, user);
+		return SUCCESS;
+	}
+	
+	private void sendEmail(Message message, User user){
+		Mail mail = new Mail();
+		mail.setSubject(message.getHeader());
+		mail.setMessage(message.getContent());
+		mail.setReceiver(user.getEmail());
+		EmailUtil.send(mail);
 	}
 	
 //	@Action(value="doSearchAdmin",results={@Result(name=SUCCESS,type="redirect",location="/user/admin/updateAdminInfo")})
@@ -733,6 +788,14 @@ public class AdminAction extends ActionSupport implements SessionAware , Request
 	
 	@Action(value="BorrowBook",results={@Result(name=SUCCESS,type="redirect",location="/user/admin/mainPage")})
 	public String borrowBook(){
+		Student user = userService.getStudentById(userId);
+		if(user.getAccount() == null){
+			session.put("code", DONT_HAVE_ACCOUNT_YET);
+			return SUCCESS;
+		}else if(user.getAccount().isFrozen()){
+			session.put("code", ACCOUNT_HAS_BEAN_FROZEN);
+			return SUCCESS;
+		}
 		bookService.borrowBook(userId, bookId);
 		session.put("code", BORROW_BOOK_SUCC);
 		return SUCCESS;

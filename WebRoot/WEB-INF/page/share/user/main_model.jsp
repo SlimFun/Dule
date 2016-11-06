@@ -59,7 +59,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	  </a>
 	  <a href="#!name">
 	      <span class="white-text email">
-		  	balance: <s:property value="#session.user.account.money"/><br>
+	      	<s:if test="%{#session.user.account!=null}">
+		      	<s:if test="%{#session.user.account.frozen==false}">
+			  		balance: <s:property value="#session.user.account.money"/><br>
+			  	</s:if>
+			  	<s:else>
+			  		Account has bean frozen.<br>
+			  	</s:else>
+		  	</s:if>
+		  	<s:else>
+		  		You don't have an account yet.
+		  	</s:else>
 		  	<s:property value="#session.user.email"/>
 		  </span>
 	  </a>

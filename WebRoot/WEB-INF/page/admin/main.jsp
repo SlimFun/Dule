@@ -70,6 +70,24 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</form>
 	</div>
 	
+	<div id="DontHaveAccount" class="modal">
+			    <div class="modal-content">
+			      <p style="color: #ef5350">The user don't have account yet!</p>
+			    </div>
+			    <div class="modal-footer">
+			      <a class=" modal-action modal-close waves-effect waves-green btn-flat">OK</a>
+			    </div>
+		</div>
+		
+		<div id="AccountFrozen" class="modal">
+			    <div class="modal-content">
+			      <p style="color: #ef5350">The user's account has bean frozen!</p>
+			    </div>
+			    <div class="modal-footer">
+			      <a class=" modal-action modal-close waves-effect waves-green btn-flat">OK</a>
+			    </div>
+		</div>
+	
 	<span id="code" style="visibility: hidden;"><s:property value="errorCode"/></span>
 	
 	<script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
@@ -86,6 +104,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			    }else if(code == 6){
 			    	content = "<span>Return book successed.</span>";
 			    }
+			    if(code == 11){
+	  				$('#DontHaveAccount').openModal();
+	  				return;
+	  			}else if(code == 12){
+	  				$('#AccountFrozen').openModal();
+	  				return;
+	  			}
 			    var $toastContent = $(content);
 	  			Materialize.toast($toastContent, 1000);
 		    }

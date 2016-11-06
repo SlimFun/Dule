@@ -43,5 +43,21 @@ public class AccountServiceImpl implements AccountService{
 		this.accountDao = accountDao;
 	}
 
+	@Override
+	public void frozenAccount(int id) {
+		// TODO Auto-generated method stub
+		Account account = accountDao.find(Account.class, id);
+		account.setFrozen(true);
+		accountDao.update(account);
+	}
+
+	@Override
+	public void activeAccount(int id) {
+		// TODO Auto-generated method stub
+		Account account = accountDao.find(Account.class, id);
+		account.setFrozen(false);
+		accountDao.update(account);
+	}
+
 	
 }

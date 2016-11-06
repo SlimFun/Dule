@@ -64,11 +64,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					      				status: 
 					      				<s:if test="%{userSearchResult.account.frozen==false}">
 					      					Active &nbsp;&nbsp;&nbsp;
-					      					<button class="btn waves-effect waves-light tooltipped" data-position="right" data-delay="50" data-tooltip="Frozen this account" style="background-color: #ef5350">Frozen</button>
+					      					<a href="<%=basePath%>user/admin/frozenAccount?id=<s:property value="userSearchResult.account.id"/>&userId=<s:property value="userSearchResult.id"/>" class="btn waves-effect waves-light tooltipped" data-position="right" data-delay="50" data-tooltip="Frozen this account" style="background-color: #ef5350">Frozen</a>
 					      				</s:if>
 					      				<s:else>
 					      					Frozen &nbsp;&nbsp;&nbsp;
-					      					<button class="btn waves-effect waves-light tooltipped" data-position="right" data-delay="50" data-tooltip="Active this account">Active</button>
+					      					<a href="<%=basePath%>user/admin/activeAccount?id=<s:property value="userSearchResult.account.id"/>&userId=<s:property value="userSearchResult.id"/>" class="btn waves-effect waves-light tooltipped" data-position="right" data-delay="50" data-tooltip="Active this account">Active</a>
 										</s:else>
 					      			</s:else>
 				      			</div>
